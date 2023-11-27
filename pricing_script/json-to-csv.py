@@ -71,19 +71,19 @@ def json_to_csv(json_data):
     # Calculate the sum for each column to create a new 'Total' row
     total_row = df.sum(numeric_only=True)
     total_row['customer'] = 'Total'
-    pd.concat([df, total_row], ignore_index=True)
+    df = pd.concat([df, pd.DataFrame(total_row).transpose()], ignore_index=True, axis=0)
     
     # Combine Davion 
     davion_total = df.loc[df['customer'].isin(['gcp-davion-prod_davion-production-usdt', 
                                                'gcp-davion-prod_davion-production']), 
                           df.columns != 'customer'].sum()
     davion_total['customer'] = 'davion-total'
-    pd.concat([df, davion_total], ignore_index=True)    
-    
+    df = pd.concat([df, pd.DataFrame(davion_total).transpose()], ignore_index=True, axis=0)
+
     return df
 
 
-# In[5]:
+# In[8]:
 
 
 # Get the path of the current working directory
@@ -103,11 +103,12 @@ for file_path in json_files:
         dfs.append(df)
 
 
-# In[6]:
+# In[9]:
 
 
 # aggregated JSONs
 combined_df = pd.concat(dfs, ignore_index=True)
+combined_df = combined_df.groupby('customer').sum().reset_index()
 
 # Get the current date
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -116,21 +117,6 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 csv_filename = f"output_{current_date}.csv"
 combined_df.to_csv(csv_filename)
 print(f"Data saved to {csv_filename}")
-
-
-# In[8]:
-
-
-# # if Avishag wants me to aggregate 
-
-# combined_df = pd.concat([df, df_2], ignore_index=True)
-# aggregate_df = combined_df.groupby('customer').sum().reset_index()
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
