@@ -1,3 +1,3 @@
 @echo off
-python json-to-csv.py
+C:\Python38\python.exe json-to-csv.py
 pause

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[7]:
+# In[1]:
 
 
+import os 
 import json
 import pandas as pd
 from datetime import datetime
@@ -85,15 +86,24 @@ def json_to_csv(json_data):
 # In[5]:
 
 
-# Replace 'your_file.json' with your JSON file path
-with open('example.json', 'r') as json_file:
-    json_data = json.load(json_file)
+# Get the path of the current working directory
+current_folder = os.getcwd()
 
-# Convert JSON to DataFrame
-df = json_to_csv(json_data)
+# List all JSON files in the current folder
+json_files = [os.path.join(current_folder, file) for file in os.listdir(current_folder) if file.endswith('.json')]
+
+# Initialize an empty list to store DataFrames
+dfs = []
+
+# Process each JSON file
+for file_path in json_files:
+    with open(file_path, 'r') as file:
+        json_data = json.load(file)
+        df = json_to_csv(json_data)
+        dfs.append(df)
 
 
-# In[9]:
+# In[6]:
 
 
 # Save DataFrame to CSV
@@ -101,19 +111,13 @@ df = json_to_csv(json_data)
 # Get the current date
 current_date = datetime.now().strftime("%Y-%m-%d")
 
-# Save the aggregated DataFrame to a new CSV, including the date in the filename
+# Save the DataFrame to a new CSV, including the date in the filename
 csv_filename = f"output_{current_date}.csv"
-df.to_csv(aggregate_csv_filename)
-print(f"Aggregated data saved to {csv_filename}")
+df.to_csv(csv_filename)
+print(f"Data saved to {csv_filename}")
 
 
-# In[6]:
-
-
-df.head()
-
-
-# In[57]:
+# In[8]:
 
 
 # # if Avishag wants me to aggregate 
