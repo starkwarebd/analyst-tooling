@@ -71,14 +71,14 @@ def json_to_csv(json_data):
     # Calculate the sum for each column to create a new 'Total' row
     total_row = df.sum(numeric_only=True)
     total_row['customer'] = 'Total'
-    df = df.append(total_row, ignore_index=True)
-
+    pd.concat([df, total_row], ignore_index=True)
+    
     # Combine Davion 
     davion_total = df.loc[df['customer'].isin(['gcp-davion-prod_davion-production-usdt', 
                                                'gcp-davion-prod_davion-production']), 
                           df.columns != 'customer'].sum()
     davion_total['customer'] = 'davion-total'
-    df = df.append(davion_total, ignore_index=True)
+    pd.concat([df, davion_total], ignore_index=True)    
     
     return df
 
@@ -106,14 +106,15 @@ for file_path in json_files:
 # In[6]:
 
 
-# Save DataFrame to CSV
+# aggregated JSONs
+combined_df = pd.concat(dfs, ignore_index=True)
 
 # Get the current date
 current_date = datetime.now().strftime("%Y-%m-%d")
 
 # Save the DataFrame to a new CSV, including the date in the filename
 csv_filename = f"output_{current_date}.csv"
-df.to_csv(csv_filename)
+combined_df.to_csv(csv_filename)
 print(f"Data saved to {csv_filename}")
 
 
